@@ -1,101 +1,57 @@
-# lib/db/models.py
-import datetime
-from .models import Base
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, Float
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from datetime import datetime
 
-# Simulated in-memory DB
-USERS = []
-EVENTS = []
-TICKETS = []
+# --- Database Setup ---
+engine = create_engine("sqlite:///ticket_booking.db", echo=False)
+Session = sessionmaker(bind=engine)
+session = Session()
 
-class User:
-    def __init__(self, id, username, password, role="user"):
-        self.id = id
-        self.username = username
-        self.password = password
-        self.role = role  # "admin" or "user"
+Base = declarative_base()
 
-    @staticmethod
-    def create(username, password, role="user"):
-        user = User(len(USERS)+1, username, password, role)
-        USERS.append(user)
-        return user
+# --- Models ---
 
-    @staticmethod
-    def authenticate(username, password):
-        for u in USERS:
-            if u.username == username and u.password == password:
-                return u
-        return None
+class User(Base):
+    __tablename__ = "users"
 
-    @property
-    def is_admin(self):
-        return self.role == "admin"
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    role = Column(String, default="user")   # "user" or "admin"
 
+    tickets = relationship("Ticket", back_populates="user")
 
-class Event:
-    def __init__(self, id, name, date, capacity, price):
-        self.id = id
-        self.name = name
-        self.date = date              # "YYYY-MM-DD"
-        self.capacity = capacity
-        self.remaining_tickets = capacity
-        self.price = price
+    def __repr__(self):
+        return f"<User(id={self.id}, username='{self.username}', role='{self.role}')>"
 
-    @staticmethod
-    def create(name, date, capacity, price):
-        event = Event(len(EVENTS)+1, name, date, capacity, price)
-        EVENTS.append(event)
-        return event
+class Event(Base):
+    __tablename__ = "events"
 
-    @staticmethod
-    def get_all():
-        return EVENTS
-    
-    @staticmethod
-    def get_by_id(event_id):
-        for e in EVENTS:
-            if e.id == event_id:
-                return e
-        return None
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    date = Column(DateTime, default=datetime.utcnow)
+    location = Column(String, nullable=False)
+    capacity = Column(Integer, default=100)               # total capacity
+    available_tickets = Column(Integer, default=100)     # tickets left
+    price = Column(Float, default=0.0)                   # <-- Add this column
 
-    @property
-    def is_past_event(self):
-        # compare as dates for simplicity
-        try:
-            today = datetime.date.today()
-            y, m, d = map(int, self.date.split("-"))
-            return datetime.date(y, m, d) < today
-        except Exception:
-            return False
+    tickets = relationship("Ticket", back_populates="event")
 
-    @property
-    def is_sold_out(self):
-        return self.remaining_tickets <= 0
+    def __repr__(self):
+        return f"<Event(id={self.id}, name='{self.name}', location='{self.location}', available_tickets={self.available_tickets}, price={self.price})>"
 
+class Ticket(Base):
+    __tablename__ = "tickets"
 
-class Ticket:
-    def __init__(self, id, user_id, event_id, price):
-        self.id = id
-        self.user_id = user_id
-        self.event_id = event_id
-        self.price = price
-        self.event = Event.get_by_id(event_id)
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    event_id = Column(Integer, ForeignKey("events.id"))
 
-    @staticmethod
-    def create(user_id, event_id, price):
-        ticket = Ticket(len(TICKETS)+1, user_id, event_id, price)
-        TICKETS.append(ticket)
-        return ticket
+    user = relationship("User", back_populates="tickets")
+    event = relationship("Event", back_populates="tickets")
 
-    @staticmethod
-    def get_all():
-        return TICKETS
+    def __repr__(self):
+        return f"<Ticket(id={self.id}, user_id={self.user_id}, event_id={self.event_id})>"
 
-
-def init_db():
-    USERS.clear()
-    EVENTS.clear()
-    TICKETS.clear()
-    # seed one admin so you can log in immediately
-    if not any(u.username == "admin" for u in USERS):
-        User.create("admin", "admin123", role="admin")
+# --- Create Tables ---
+Base.metadata.create_all(engine)
