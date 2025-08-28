@@ -1,21 +1,21 @@
-🎟️ Event Ticket Booking System
-📌 Project Overview
+🎟️ ## Event Ticket Booking System
+📌 3Project Overview
 
 The Event Ticket Booking System is a Python-based CLI (Command-Line Interface) application that allows Users to book event tickets and Admins to manage events.
 It uses SQLAlchemy ORM with SQLite for database management. The project demonstrates CRUD operations, authentication, and role-based access control.
 
-🚀 Features
-👥 User Features
+🚀 ##Features
+👥 ##User Features
 
-Register & Login securely (with password masking)
+##Register & Login securely (with password masking)
 
-View all upcoming events
+##View all upcoming events
 
-Book tickets for available events
+##Book tickets for available events
 
-View their bookings
+#View their bookings
 
-🛠️ Admin Features
+🛠️ #Admin Features
 
 Login with admin role
 
@@ -27,7 +27,7 @@ Delete events
 
 View all bookings
 
-🗂️ Project Structure
+🗂️ ##Project Structure
 ```Event_ticket_system/
 │── Pipfile
 │── Pipfile.lock
@@ -45,19 +45,19 @@ View all bookings
 │   ├── seed.py                # Seeds sample data
 │   └── debug.py    ```        # Debugging/Testing helpers
 
-⚙️ Installation & Setup
+⚙️ ##Installation & Setup
 1️⃣ Clone the repository
 git clone https://github.com/your-username/Event_ticket_system.git
 cd Event_ticket_system
 
-2️⃣ Install dependencies
+2️⃣ #Install dependencies
 pipenv install
 pipenv shell
 
-3️⃣ Initialize Database
+3️⃣ #Initialize Database
 python lib/seed.py
 
-4️⃣ Run the Application
+4️⃣ #Run the Application
 python lib/cli.py
 
 🖥️ Usage
@@ -74,7 +74,7 @@ If Admin:
 
 Login → Add/Update/Delete events → View all bookings
 
-🛢️ Tech Stack
+🛢️ #Tech Stack
 
 Python 3
 
@@ -84,15 +84,15 @@ SQLite (lightweight database)
 
 Alembic (migrations)
 
-🔒 Security
+🔒 #Security
 
-Passwords are masked during input
+##Passwords are masked during input
 
-Admin & User roles are separated
+#Admin & User roles are separated
 
-Database handles constraints & relationships
+#Database handles constraints & relationships
 
-🌟 Why This Project is Unique?
+🌟 ##Why This Project is Unique?
 
 ✔️ Role-based access (Admin vs User)
 ✔️ Password masking for better UX & security
@@ -103,3 +103,4 @@ Database handles constraints & relationships
 👨‍💻 Author
 
 Developed by Julius Kedienye
+
